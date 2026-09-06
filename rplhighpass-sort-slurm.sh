@@ -12,6 +12,11 @@
 #SBATCH -o rplhighpass-sort-slurm.%N.%j.out # STDOUT
 #SBATCH -e rplhighpass-sort-slurm.%N.%j.err # STDERR
 
+/data/miniconda3/bin/conda init
+source ~/.bashrc
+envarg=`/data/src/PyHipp/envlist.py`
+conda activate $envarg
+
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 python -u -c "import PyHipp as pyh; \
 import time; \
@@ -21,5 +26,8 @@ mountain_batch.mountain_batch(); \
 from PyHipp import export_mountain_cells; \
 export_mountain_cells.export_mountain_cells(); \
 print(time.localtime());"
+
+conda deactivate
+/data/src/PyHipp/envlist.py $envarg
 
 aws sns publish --topic-arn arn:aws:sns:ap-southeast-1:025775693443:awsnotify --message "RPLS1JobDone"
